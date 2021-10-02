@@ -6,7 +6,7 @@ const app=express();
     res.end('works')
 }); */
 
-app.use(express.static('public'));
+app.use(express.static('src'));
 
 const port=3000;
 
