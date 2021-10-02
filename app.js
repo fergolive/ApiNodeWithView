@@ -6,4 +6,8 @@ app.get('/',(req,res)=>{
     res.end('works')
 });
 
-express.listen(3000);
+const port=3000;
+
+app.listen(port, ()=>{
+    console.log('Servidor corriendo en el puerto ' +port);
+});
