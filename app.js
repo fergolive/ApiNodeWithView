@@ -1,15 +1,19 @@
 const express = require('express');
-
 const app=express();
 
-/* app.get('/',(req,res)=>{
-    res.end('works')
-}); */
+//settings
+app.set('port',3000)
 
-app.use(express.static('src'));
 
-const port=3000;
 
-app.listen(port, ()=>{
-    console.log('Servidor corriendo en el puerto ' +port);
+app.use(express.static('public'));
+
+
+/* //routes
+const fileRoute= require("./routes/file");
+app.use("/upfile",fileRoute) */
+
+//listening the
+app.listen(app.get('port'), ()=>{
+    console.log('Server on port', app.get('port'));
 });
