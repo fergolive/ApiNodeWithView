@@ -1,20 +1,17 @@
 const express = require('express');
 const app=express();
-var router = express.Router();
 
 
+//set routes
 var my_routes = require('./routes/routes'); 
-
-//
 app.use('/api',my_routes)
 
+
+//display web
 app.use(express.static('public'));
 
 
-
-
-
-//settings
+//server settings
 app.set('port',3000)
 
 //listening the
