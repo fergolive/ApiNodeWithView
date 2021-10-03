@@ -1,17 +1,21 @@
 const express = require('express');
 const app=express();
-
-//settings
-app.set('port',3000)
+var router = express.Router();
 
 
+var my_routes = require('./routes/routes'); 
+
+//
+app.use('/api',my_routes)
 
 app.use(express.static('public'));
 
 
-/* //routes
-const fileRoute= require("./routes/file");
-app.use("/upfile",fileRoute) */
+
+
+
+//settings
+app.set('port',3000)
 
 //listening the
 app.listen(app.get('port'), ()=>{
