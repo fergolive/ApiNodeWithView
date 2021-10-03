@@ -2,7 +2,7 @@
 
 var api_url = "http://localhost:3000/api/";
 
-function myFunction() {
+function asdasd() {
   fetch(api_url)
     .then((response) => response.json())
     .then((data) => {
@@ -11,7 +11,7 @@ function myFunction() {
     .catch(console.error);
 }
 
-function sendData() {
+function myFunction() {
 
 
   var url = "http://localhost:3000/api/";

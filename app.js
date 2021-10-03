@@ -1,7 +1,6 @@
 const express = require('express');
 const app=express();
 
-
 //set routes
 var my_routes = require('./routes/routes'); 
 app.use('/api',my_routes)

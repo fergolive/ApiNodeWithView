@@ -8,6 +8,7 @@ exports.my_function = (req, res)=> {
         {"name":"Bob", "email":"bob32@gmail.com"}  
     ]  
 
+    console.log(req.body);
     res.json(myjsondata)
 };
 
