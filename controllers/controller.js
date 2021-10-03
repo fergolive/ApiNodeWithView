@@ -1,7 +1,29 @@
 //backend functions
+ 
 
 
 exports.my_function = (req, res)=> {
+   
+    const file = req.files;
+console.log(file);
+
+    file.mv('/tempfiles/' + file.name, function(err, result) {
+     if(err) 
+      throw err;
+     res.send({
+      success: true,
+      message: "File uploaded!"
+     });
+    })
+
+   
+};
+
+    
+   // res.json({recibido:'papa'})
+
+
+exports.my_functionasdsd = (req, res)=> {
     
     var myjsondata=[  
         {"name":"Ram", "email":"Ram@gmail.com"},  
