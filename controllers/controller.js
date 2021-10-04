@@ -1,23 +1,39 @@
 //backend functions
  
+var fileupload = require('express-fileupload');
+//const imageThumbnail = require('image-thumbnail');
 
 
 exports.my_function = (req, res)=> {
-   
-    const file = req.files;
-console.log(file);
+   let fileU = req.files.files;
+    
+    let urlDest=`${__dirname}/tempfiles/${fileU.name}`;
 
-    file.mv('/tempfiles/' + file.name, function(err, result) {
+     fileU.mv(urlDest, function(err, result) {
      if(err) 
       throw err;
      res.send({
       success: true,
       message: "File uploaded!"
      });
-    })
+    }) 
 
-   
-};
+    
+    //let urlDestOpen=`${__dirname}\\tempfiles\\${fileU.name}`
+
+    /* imageThumbnail(urlDestOpen)
+    .then(thumbnail => { console.log(thumbnail) })
+    .catch(err => console.error(err)); */
+
+    /* file.mv(`${__dirname}/public/${file.name}`, (err,res) => {
+        console.log(res)
+        if (err) {
+         return res.status(500).send(err);
+        }
+    
+    }) */
+}  
+
 
     
    // res.json({recibido:'papa'})
