@@ -11,12 +11,14 @@ exports.my_function = (req, res)=> {
 
         fileU.mv(urlDest, function(err, result) {
 
-            //generate thumbnails
+           
+     if(err) 
+      throw err;
+
+             //generate thumbnails
             //types: png, webp, jpeg, tiff, heif, raw
             sharp(urlDest).resize(250).png().toFile(`${__dirname}/tempfiles/thumbnail.png`)
 
-     if(err) 
-      throw err;
      res.send({success: true, message: "File uploaded!"
      });
     }) 
