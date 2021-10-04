@@ -1,37 +1,31 @@
 //backend functions
  
 var fileupload = require('express-fileupload');
-//const imageThumbnail = require('image-thumbnail');
-
+const sharp = require('sharp');
 
 exports.my_function = (req, res)=> {
-   let fileU = req.files.files;
+
+    let fileU = req.files.files;
     
     let urlDest=`${__dirname}/tempfiles/${fileU.name}`;
 
-     fileU.mv(urlDest, function(err, result) {
+        fileU.mv(urlDest, function(err, result) {
+
+            //generate thumbnails
+            //types: png, webp, jpeg, tiff, heif, raw
+            sharp(urlDest).resize(250).png().toFile(`${__dirname}/tempfiles/thumbnail.png`)
+
      if(err) 
       throw err;
-     res.send({
-      success: true,
-      message: "File uploaded!"
+     res.send({success: true, message: "File uploaded!"
      });
     }) 
+ 
 
     
-    //let urlDestOpen=`${__dirname}\\tempfiles\\${fileU.name}`
-
-    /* imageThumbnail(urlDestOpen)
-    .then(thumbnail => { console.log(thumbnail) })
-    .catch(err => console.error(err)); */
-
-    /* file.mv(`${__dirname}/public/${file.name}`, (err,res) => {
-        console.log(res)
-        if (err) {
-         return res.status(500).send(err);
-        }
     
-    }) */
+    
+ 
 }  
 
 
@@ -55,3 +49,5 @@ exports.my_functionasdsd = (req, res)=> {
 exports.my_function_with_params = (req, res)=> {
     res.send('hola mundo con parametros: ' + req.params.id);
 };
+
+
