@@ -1,34 +1,84 @@
 //backend functions
  
-var fileupload = require('express-fileupload');
+//var fileupload = require('express-fileupload');
 const sharp = require('sharp');
+const fs = require('fs')
+let fileName='';
 
-exports.my_function = (req, res)=> {
+exports.genThumbnail = (req, res)=> {
 
     let fileU = req.files.files;
     
+    fileName=fileU.name;
     let urlDest=`${__dirname}/tempfiles/${fileU.name}`;
 
-        fileU.mv(urlDest, function(err, result) {
+    let resp;
 
-           
-     if(err) 
-      throw err;
+    //store file locally with mv function
+    fileU.mv(urlDest, function(err, result) {
+        //storeThumbLocally(urlDest,res);
+         sendThumbToFront(urlDest,res)
+         
+         
+    })
 
-             //generate thumbnails
-            //types: png, webp, jpeg, tiff, heif, raw
-            sharp(urlDest).resize(250).png().toFile(`${__dirname}/tempfiles/thumbnail.png`)
+    //removeFile()
+        
+   
+       
 
-     res.send({success: true, message: "File uploaded!"
-     });
-    }) 
- 
-
-    
-    
-    
  
 }  
+
+function sendThumbToFront(urlOrig,res){
+    try{
+        sharp(urlOrig)
+        .resize(250)
+        .png()
+        .toBuffer()
+        .then(data=>{
+            const base64Data = data.toString('base64');
+            //return file to front in Base64 format
+           
+            res.status(202).json({ b64Data: base64Data, extension:'png'});
+            
+        })
+    } catch(error){
+        console.log(error);
+    }
+}
+
+function storeThumbLocally(urlOrig,res){
+    try{
+        //generate thumbnails
+        //types: png, webp, jpeg, tiff, heif, raw
+        sharp(urlOrig)
+        .resize(250)
+        .png()
+        .toFile(`${__dirname}/tempfiles/thumbnail.png`)
+        .then((data) => {
+            
+            //res.send(data);
+            res.send({success: true, message: "File uploaded!"});
+
+            }); 
+              
+    } catch(error){
+        console.log(error);
+    }
+}
+
+function removeFile(){
+
+    let filePath=`${__dirname}\\tempfiles\\${fileName}`
+
+    try {
+        fs.unlinkSync(filePath)
+        
+    } catch(error){
+        console.log(error);
+    }
+}
 
 
     

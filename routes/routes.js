@@ -10,7 +10,7 @@ var my_controller = require('../controllers/controller.js')
 
 //routes
 
-router.put('/',jsonParser, my_controller.my_function);
+router.put('/genthumb',jsonParser, my_controller.genThumbnail);
 
 
 
