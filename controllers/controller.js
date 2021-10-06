@@ -81,13 +81,15 @@ function removeTempFiles(){
    
      fs.readdir(directory, (err, files) => {
        
-            console.log('borrando archivos...');
-            for (const file of files) {
-                console.log(file);
-                fs.unlink(path.join(directory, file), err => {
+            files.forEach(element => {
+                
+                fs.unlink(path.join(directory, element), err => {
                 if (err) throw err;
                 });
-            }
+            });
+            
+                
+            
         
 
     });
