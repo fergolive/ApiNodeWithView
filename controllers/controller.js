@@ -3,63 +3,69 @@
 //var fileupload = require('express-fileupload');
 const sharp = require('sharp');
 const fs = require('fs')
+const path = require('path');
+
 let fileName='';
+let urlDest;
+
 
 exports.genThumbnail = (req, res)=> {
-
-    let fileU = req.files.files;
     
+    let fileU = req.files.files; //file from frontend upload
     fileName=fileU.name;
-    let urlDest=`${__dirname}/tempfiles/${fileU.name}`;
-
-    let resp;
-
-    //store file locally with mv function
+    urlDest=`${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
+    
+    removeTempFiles()
     fileU.mv(urlDest, function(err, result) {
-        //storeThumbLocally(urlDest,res);
-         sendThumbToFront(urlDest,res)
-         
-         
-    })
-
-    //removeFile()
-        
-   
-       
-
- 
+        createThumbnail(res)
+    }) //store file locally with mv function
+      
+    
 }  
 
-function sendThumbToFront(urlOrig,res){
+/* async function main(res){
+    
+    await createThumbnail()
+    //await sendThumbnail(fileB64,res)
+
+    //await storeThumbLocally() //if you need save a thumb in server
+    
+} */
+
+
+
+function createThumbnail(res){
     try{
-        sharp(urlOrig)
+        sharp(urlDest)
         .resize(250)
         .png()
         .toBuffer()
         .then(data=>{
             const base64Data = data.toString('base64');
-            //return file to front in Base64 format
            
             res.status(202).json({ b64Data: base64Data, extension:'png'});
-            
         })
     } catch(error){
         console.log(error);
     }
 }
 
-function storeThumbLocally(urlOrig,res){
+function sendThumbnail(base64Data,res){
+    res.status(202).json({ b64Data: base64Data, extension:'png'});
+}
+
+function storeThumbLocally(){
     try{
         //generate thumbnails
         //types: png, webp, jpeg, tiff, heif, raw
-        sharp(urlOrig)
+        sharp(urlDest)
         .resize(250)
         .png()
         .toFile(`${__dirname}/tempfiles/thumbnail.png`)
         .then((data) => {
-            
+            console.log('thumb stored');
             //res.send(data);
-            res.send({success: true, message: "File uploaded!"});
+            //res.send({success: true, message: "File uploaded!"});
 
             }); 
               
@@ -68,16 +74,23 @@ function storeThumbLocally(urlOrig,res){
     }
 }
 
-function removeFile(){
+function removeTempFiles(){
 
-    let filePath=`${__dirname}\\tempfiles\\${fileName}`
+    const directory=`${__dirname}\\tempfiles`
 
-    try {
-        fs.unlinkSync(filePath)
-        
-    } catch(error){
-        console.log(error);
-    }
+   
+     fs.readdir(directory, (err, files) => {
+        if(files.length>0){
+            console.log('borrando archivos...');
+            for (const file of files) {
+                console.log(file);
+                fs.unlink(path.join(directory, file), err => {
+                if (err) throw err;
+                });
+            }
+        }
+
+    });
 }
 
 
