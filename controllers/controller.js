@@ -76,11 +76,11 @@ function storeThumbLocally(){
 
 function removeTempFiles(){
 
-    const directory='./tempfiles'
+    const directory=`${__dirname}/tempfiles/`
 
    
      fs.readdir(directory, (err, files) => {
-       
+            console.log(files);
             files.forEach(element => {
                 
                 fs.unlink(path.join(directory, element), err => {
