@@ -25,14 +25,14 @@ function doupload2(data) {
   .catch(error => console.error('Error:', error))
   .then(response => {
     
-    console.log(response);
+    
 
     const base64_response = String(response['b64Data'])
     
     //show image in html
     var image = new Image();
     image.onload = function(){
-      console.log(image.width); // image is loaded and we have image width 
+     
     }
     image.src = 'data:image/png;base64,'+base64_response;
     document.body.appendChild(image);
@@ -69,7 +69,7 @@ function myFunction() {
     .then((response) => {
 
       //const blob = b64toBlob(data.b64Data, data.contentType);
-      console.log(blob);
+    
 
       //console.log("Success:", response)
   });
