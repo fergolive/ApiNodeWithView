@@ -80,7 +80,7 @@ function removeTempFiles(){
 
    
      fs.readdir(directory, (err, files) => {
-        if(Array.isArray(files) && files.length){
+       
             console.log('borrando archivos...');
             for (const file of files) {
                 console.log(file);
@@ -88,7 +88,7 @@ function removeTempFiles(){
                 if (err) throw err;
                 });
             }
-        }
+        
 
     });
 }
