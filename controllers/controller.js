@@ -76,7 +76,7 @@ function storeThumbLocally(){
 
 function removeTempFiles(){
 
-    const directory=`${__dirname}\\tempfiles`
+    const directory='./tempfiles'
 
    
      fs.readdir(directory, (err, files) => {
