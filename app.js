@@ -1,9 +1,15 @@
 const express = require('express');
 const app=express();
 var fileupload = require('express-fileupload');
-/* var cors=require('cors');
+const cors = require('cors');
 
-app.use(cors); */
+app.use(cors({
+    origin:'http://localhost:4201'  //origin: ['https://www.section.io', 'https://www.google.com/']   origin: '*'
+}));
+//info cors -->
+//https://www.section.io/engineering-education/how-to-use-cors-in-nodejs-with-express/
+
+
 app.use(fileupload());
 
 

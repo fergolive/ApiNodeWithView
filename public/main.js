@@ -48,7 +48,7 @@ function doupload2(data) {
 }
 
 
-/* 
+
 function myFunction() {
 
 
@@ -72,7 +72,7 @@ function myFunction() {
       console.log(blob);
 
       //console.log("Success:", response)
-  }); */
+  });
 
 
 }
