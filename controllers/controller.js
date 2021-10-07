@@ -4,7 +4,7 @@
 const sharp = require('sharp');
 const fs = require('fs')
 const path = require('path');
-
+var Thumbbot = require('thumbbot');
 let fileName='';
 let urlDest;
 
@@ -12,39 +12,42 @@ let urlDest;
 exports.genThumbnail = (req, res)=> {
     
     let fileU = req.files.files; //file from frontend upload
-   
-    let result = detectExtension(fileU);
-
+    fileName=fileU.name
+    let result = getExtension(fileName);
     urlDest=`${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
-    
     removeTempFiles()
-    fileU.mv(urlDest, function(err, result) {
-        createThumbnail(res)
-    }) //store file locally with mv function
-      
+    if(result.type==='image'){
+        fileU.mv(urlDest, function(err, result) {
+            //createThumbnailForImage(res)
+        }) //store file locally with mv function 
+    } else if(result.type==='video'){
+        fileU.mv(urlDest, function(err, result) {
+            createThumbnailForVideo(res)
+        }) //store file locally with mv function 
+    }
     
 }  
 
 
 
-function detectExtension(){
+function getExtension(fileName){
+    let result_extension={};
     const images = ["jpg", "gif", "png"];
     const videos = ["mp4", "3gp", "ogg"];
-
     let indexPoint = fileName.lastIndexOf('.')
-    let cantChar=fileName.length
+    let cantChar=fileName.length-1
     let rest=cantChar-indexPoint
     let extension = fileName.substr(-1*rest)
-
     if (images.includes(extension)) {
-        return {type:'image',extension:extension}
+        result_extension = {type:'image',extension:extension}
       } else if (videos.includes(extension)) {
-        return {type:'video',extension:extension}
+        result_extension = {type:'video',extension:extension}
       }
+      return result_extension
 }
 
 
-function createThumbnail(res){
+function createThumbnailForImage(res){
     try{
         sharp(urlDest)
         .resize(250)
@@ -59,6 +62,20 @@ function createThumbnail(res){
         console.log(error);
     }
 }
+
+function createThumbnailForVideo(res){
+    try{
+        var video = new Thumbbot(urlDest);
+        video.seek('00:01:24'); // take a snapshot at 01:24
+ 
+        var thumbnail = yield video.save();
+        console.log(thumbnail);
+    } catch(error){
+        console.log(error);
+    }
+}
+
+
 
 function sendThumbnail(base64Data,res){
     res.status(202).json({ b64Data: base64Data, extension:'png'});
@@ -88,7 +105,7 @@ function removeTempFiles(){
 
     const directory=`${__dirname}/tempfiles/`
 
-   
+
      fs.readdir(directory, (err, files) => {
             console.log(files);
             files.forEach(element => {
@@ -98,18 +115,11 @@ function removeTempFiles(){
                 });
             });
             
-                
             
-        
-
     });
 }
 
-
-    
    // res.json({recibido:'papa'})
-
-
 exports.my_functionasdsd = (req, res)=> {
     
     var myjsondata=[  

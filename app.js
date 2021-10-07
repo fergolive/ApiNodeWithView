@@ -23,7 +23,7 @@ app.use(express.static('public'));
 
 
 //server settings
-app.set('port',80)
+app.set('port',3000)
 
 //listening the
 app.listen(app.get('port'), ()=>{
