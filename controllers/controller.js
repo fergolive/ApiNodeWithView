@@ -12,7 +12,9 @@ let urlDest;
 exports.genThumbnail = (req, res)=> {
     
     let fileU = req.files.files; //file from frontend upload
-    fileName=fileU.name;
+   
+    let result = detectExtension(fileU);
+
     urlDest=`${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
     
     removeTempFiles()
@@ -23,15 +25,23 @@ exports.genThumbnail = (req, res)=> {
     
 }  
 
-/* async function main(res){
-    
-    await createThumbnail()
-    //await sendThumbnail(fileB64,res)
 
-    //await storeThumbLocally() //if you need save a thumb in server
-    
-} */
 
+function detectExtension(){
+    const images = ["jpg", "gif", "png"];
+    const videos = ["mp4", "3gp", "ogg"];
+
+    let indexPoint = fileName.lastIndexOf('.')
+    let cantChar=fileName.length
+    let rest=cantChar-indexPoint
+    let extension = fileName.substr(-1*rest)
+
+    if (images.includes(extension)) {
+        return {type:'image',extension:extension}
+      } else if (videos.includes(extension)) {
+        return {type:'video',extension:extension}
+      }
+}
 
 
 function createThumbnail(res){
