@@ -5,8 +5,6 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
-
-
 let fileName = "";
 let urlDest;
 
@@ -16,34 +14,36 @@ exports.genThumbnail = (req, res) => {
   fileName = fileU.name;
   let result = getExtension(fileName);
   urlDest = `${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
-
+  urlDestPy = `${__dirname}/python_tools/video.mp4`
   //removeTempFiles();
 
   if (result.type === "image") {
+
     fileU.mv(urlDest, function (err, result) {
       //createThumbnailForImage(res)
     }); //store file locally with mv function
+
   } else if (result.type === "video") {
    
     try{
-        
-         const spawn = require('child_process').spawn
-        const pythonProcess = spawn('py', [`${__dirname}/scriptpython.py`])
-        let pythonResponse = ""
-        pythonProcess.stdout.on('data', (data)=> {
-            pythonResponse += data
-            console.log(`stdout:${data}`);
-        })
-        pythonProcess.stderr.on('data', (data)=> {
-            console.log(`stderr:${data}`);
-        })
-        pythonProcess.stdout.on('end', ()=> {
-            
-            console.log(pythonResponse)
-        })
-        pythonProcess.stdin.write('backendi')
-        pythonProcess.stdin.end() 
 
+      fileU.mv(urlDestPy, function (err, result) {
+          const spawn = require('child_process').spawn
+          const pythonProcess = spawn('py', [`${__dirname}/python_tools/scriptpython.py`])
+          let pythonResponse = ""
+          pythonProcess.stdout.on('data', (data)=> {
+              pythonResponse += data
+          })
+          pythonProcess.stderr.on('data', (data)=> {
+              console.log(`stderr:${data}`);
+          })
+          pythonProcess.stdout.on('end', ()=> {
+              console.log('py ejecutado');
+              console.log(pythonResponse)
+          })
+          pythonProcess.stdin.write('mundo')
+          pythonProcess.stdin.end() 
+      });
     
         
     }
