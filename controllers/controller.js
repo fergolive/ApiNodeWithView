@@ -24,9 +24,33 @@ exports.genThumbnail = (req, res) => {
       //createThumbnailForImage(res)
     }); //store file locally with mv function
   } else if (result.type === "video") {
-    fileU.mv(urlDest, function (err, result) {
-      createThumbnailForVideo(res, fileU);
-    }); //store file locally with mv function
+   
+    try{
+        
+         const spawn = require('child_process').spawn
+        const pythonProcess = spawn('py', [`${__dirname}/scriptpython.py`])
+        let pythonResponse = ""
+        pythonProcess.stdout.on('data', (data)=> {
+            pythonResponse += data
+            console.log(`stdout:${data}`);
+        })
+        pythonProcess.stderr.on('data', (data)=> {
+            console.log(`stderr:${data}`);
+        })
+        pythonProcess.stdout.on('end', ()=> {
+            
+            console.log(pythonResponse)
+        })
+        pythonProcess.stdin.write('backendi')
+        pythonProcess.stdin.end() 
+
+    
+        
+    }
+    catch(err){
+        console.log(err);
+    }      
+
   }
 };
 
@@ -69,11 +93,6 @@ function getFfmpegInstance() {
   });
 }
 
-function createThumbnailForVideo(res, file) {
-  
- 
-
-}
 
 
 
