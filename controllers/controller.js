@@ -27,23 +27,34 @@ exports.genThumbnail = (req, res) => {
    
     try{
 
-      fileU.mv(urlDestPy, function (err, result) {
-          const spawn = require('child_process').spawn
-          const pythonProcess = spawn('py', [`${__dirname}/python_tools/scriptpython.py`])
-          let pythonResponse = ""
-          pythonProcess.stdout.on('data', (data)=> {
-              pythonResponse += data
-          })
-          pythonProcess.stderr.on('data', (data)=> {
-              console.log(`stderr:${data}`);
-          })
-          pythonProcess.stdout.on('end', ()=> {
-              console.log('py ejecutado');
-              console.log(pythonResponse)
-          })
-          pythonProcess.stdin.write('mundo')
-          pythonProcess.stdin.end() 
-      });
+      fileU.mv(urlDest, function (err, result) {
+        const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+        const ffmpeg = require('fluent-ffmpeg');
+        ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+        // console.log(ffmpegInstaller.path, ffmpegInstaller.version);
+        var path = require('path'), // Default node module
+        pathToFile = path.join(__dirname, 'tempfiles', fileName),
+        pathToSnapshot = path.join(__dirname, 'tempfiles');
+
+        var proc = ffmpeg(pathToFile)
+        // setup event handlers
+        .on('filenames', function(filenames) {
+          console.log('screenshots are ' + filenames.join(', '));
+        })
+        .on('end', function() {
+          console.log('screenshots were saved');
+        })
+        .on('error', function(err) {
+          console.log('an error happened: ' + err.message);
+        })
+        // take 2 screenshots at predefined timemarks and size
+        //.takeScreenshots({ count: 2, timemarks: [ '00:00:02.000', '6' ], size: '150x100' },pathToSnapshot);
+        .takeScreenshots({ count: 2, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot);
+      }); //store file locally with mv function
+
+      
+
+      
     
         
     }
