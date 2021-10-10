@@ -20,7 +20,7 @@ exports.genThumbnail = (req, res) => {
   if (result.type === "image") {
 
     fileU.mv(urlDest, function (err, result) {
-      //createThumbnailForImage(res)
+      createThumbnailForImage(res)
     }); //store file locally with mv function
 
   } else if (result.type === "video") {
