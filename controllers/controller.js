@@ -4,8 +4,11 @@
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
+const { time, timeStamp } = require("console");
+const { setTimeout } = require("timers/promises");
 
 let fileName = "";
+let onlyName='';
 let urlDest;
 
 
@@ -13,14 +16,18 @@ exports.genThumbnail = (req, res) => {
   let fileU = req.files.files; //file from frontend upload
   fileName = fileU.name;
   let result = getExtension(fileName);
+  onlyName=getNameWithOutExtension(fileName);
   urlDest = `${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
   urlDestPy = `${__dirname}/python_tools/video.mp4`
-  //removeTempFiles();
+
+  removeTempFiles();
 
   if (result.type === "image") {
 
     fileU.mv(urlDest, function (err, result) {
-      createThumbnailForImage(res)
+
+      createThumbnailForImage(res,fileName)
+
     }); //store file locally with mv function
 
   } else if (result.type === "video") {
@@ -28,6 +35,36 @@ exports.genThumbnail = (req, res) => {
     try{
 
       fileU.mv(urlDest, function (err, result) {
+
+       createThumbnailForVideo(res).then(()=>{
+          //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
+          let base64Data= base64_encode(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
+          console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
+          res.status(202).json({ b64Data: base64Data, extension: "png" });
+        })
+
+      }); //store file locally with mv function
+
+ 
+    }
+    catch(err){
+        console.log(err);
+    }      
+
+  }
+};
+
+/* async function asyncThumbsVideo(res){
+
+  await createThumbnailForVideo()
+
+  
+}  */
+
+function createThumbnailForVideo(){
+
+  return new Promise((resolve,reject)=>{
+
         const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
         const ffmpeg = require('fluent-ffmpeg');
         ffmpeg.setFfmpegPath(ffmpegInstaller.path);
@@ -38,32 +75,34 @@ exports.genThumbnail = (req, res) => {
 
         var proc = ffmpeg(pathToFile)
         // setup event handlers
-        .on('filenames', function(filenames) {
-          console.log('screenshots are ' + filenames.join(', '));
+        .on('filenames', (filenames)=> {
+          //console.log('screenshots are ' + filenames.join(', '));
         })
-        .on('end', function() {
+        .on('end', (data)=> {
           console.log('screenshots were saved');
+          
         })
-        .on('error', function(err) {
+        .on('error', (err)=> {
           console.log('an error happened: ' + err.message);
+          return reject(new Error(err))
         })
         // take 2 screenshots at predefined timemarks and size
         //.takeScreenshots({ count: 2, timemarks: [ '00:00:02.000', '6' ], size: '150x100' },pathToSnapshot);
-        .takeScreenshots({ count: 2, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot);
-      }); //store file locally with mv function
+        .takeScreenshots({ count: 1,filename:`thumb_${onlyName}.png`, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot)
+          .on('end', () => {
+            console.log('FFmpeg done!')
+            resolve()
+          })
+          .on('error', (err)=> {
+            console.log('an error happened: ' + err.message);
+            return reject(new Error(err))
+          })
+          
+    })
 
-      
-
-      
-    
         
-    }
-    catch(err){
-        console.log(err);
-    }      
-
-  }
-};
+        
+}
 
 function getExtension(fileName) {
   let result_extension = {};
@@ -81,9 +120,31 @@ function getExtension(fileName) {
   return result_extension;
 }
 
-function createThumbnailForImage(res) {
+function base64_encode(file) {
+  // read binary data
+  var bitmap = fs.readFileSync(file);
+  // convert binary data to base64 encoded string
+  let b64str=new Buffer.from(bitmap).toString('base64');
+  return b64str;
+}
+
+function getNameWithOutExtension(fileName) {
+
+  //file.png
+  let result_extension = {};
+  const images = ["jpg", "gif", "png"];
+  const videos = ["mp4", "3gp", "ogg", "avi"];
+  let indexPoint = fileName.lastIndexOf(".");
+  let cantChar = fileName.length - 1;
+  
+  let name = fileName.substr(0,indexPoint);
+  return name;
+}
+
+function createThumbnailForImage(res,nameFile) {
+  let newUrlDest = `${__dirname}/tempfiles/${nameFile}`;
   try {
-    sharp(urlDest)
+    sharp(newUrlDest)
       .resize(250)
       .png()
       .toBuffer()
@@ -132,6 +193,7 @@ function storeThumbLocally() {
 }
 
 function removeTempFiles() {
+
   const directory = `${__dirname}/tempfiles/`;
 
   fs.readdir(directory, (err, files) => {
@@ -141,6 +203,7 @@ function removeTempFiles() {
       });
     });
   });
+
 }
 
 // res.json({recibido:'papa'})
