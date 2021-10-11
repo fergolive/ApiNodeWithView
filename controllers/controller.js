@@ -4,8 +4,7 @@
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-const { time, timeStamp } = require("console");
-const { setTimeout } = require("timers/promises");
+
 
 let fileName = "";
 let onlyName='';
