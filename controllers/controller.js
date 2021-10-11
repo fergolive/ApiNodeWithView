@@ -39,7 +39,7 @@ exports.genThumbnail = (req, res) => {
        createThumbnailForVideo(res).then(()=>{
           //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
           let base64Data= base64_encode(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
-          console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
+          //console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
           res.status(202).json({ b64Data: base64Data, extension: "png" });
         })
 
@@ -79,7 +79,7 @@ function createThumbnailForVideo(){
           //console.log('screenshots are ' + filenames.join(', '));
         })
         .on('end', (data)=> {
-          console.log('screenshots were saved');
+          //console.log('screenshots were saved');
           
         })
         .on('error', (err)=> {
@@ -90,7 +90,7 @@ function createThumbnailForVideo(){
         //.takeScreenshots({ count: 2, timemarks: [ '00:00:02.000', '6' ], size: '150x100' },pathToSnapshot);
         .takeScreenshots({ count: 1,filename:`thumb_${onlyName}.png`, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot)
           .on('end', () => {
-            console.log('FFmpeg done!')
+            //console.log('FFmpeg done!')
             resolve()
           })
           .on('error', (err)=> {
@@ -130,13 +130,7 @@ function base64_encode(file) {
 
 function getNameWithOutExtension(fileName) {
 
-  //file.png
-  let result_extension = {};
-  const images = ["jpg", "gif", "png"];
-  const videos = ["mp4", "3gp", "ogg", "avi"];
   let indexPoint = fileName.lastIndexOf(".");
-  let cantChar = fileName.length - 1;
-  
   let name = fileName.substr(0,indexPoint);
   return name;
 }
@@ -183,7 +177,7 @@ function storeThumbLocally() {
       .png()
       .toFile(`${__dirname}/tempfiles/thumbnail.png`)
       .then((data) => {
-        console.log("thumb stored");
+       // console.log("thumb stored");
         //res.send(data);
         //res.send({success: true, message: "File uploaded!"});
       });
