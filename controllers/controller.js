@@ -36,6 +36,7 @@ exports.genThumbnail = (req, res) => {
       fileU.mv(urlDest, function (err, result) {
 
        createThumbnailForVideo(res).then(()=>{
+         
           //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
           let base64Data= base64_encode(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
           //console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
@@ -62,6 +63,7 @@ exports.genThumbnail = (req, res) => {
 
 function createThumbnailForVideo(){
 
+  
   return new Promise((resolve,reject)=>{
 
         const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
@@ -75,10 +77,10 @@ function createThumbnailForVideo(){
         var proc = ffmpeg(pathToFile)
         // setup event handlers
         .on('filenames', (filenames)=> {
-          //console.log('screenshots are ' + filenames.join(', '));
+          console.log('screenshots are ' + filenames.join(', '));
         })
         .on('end', (data)=> {
-          //console.log('screenshots were saved');
+          console.log('screenshots were saved');
           
         })
         .on('error', (err)=> {
@@ -89,7 +91,7 @@ function createThumbnailForVideo(){
         //.takeScreenshots({ count: 2, timemarks: [ '00:00:02.000', '6' ], size: '150x100' },pathToSnapshot);
         .takeScreenshots({ count: 1,filename:`thumb_${onlyName}.png`, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot)
           .on('end', () => {
-            //console.log('FFmpeg done!')
+            console.log('FFmpeg done!')
             resolve()
           })
           .on('error', (err)=> {
