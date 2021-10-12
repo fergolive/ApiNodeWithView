@@ -6,12 +6,15 @@ const fs = require("fs");
 const path = require("path");
 
 
+
 let fileName = "";
 let onlyName='';
-let urlDest;
+let urlDest; 
 
 
 exports.genThumbnail = (req, res) => {
+
+
   let fileU = req.files.files; //file from frontend upload
   fileName = fileU.name;
   let result = getExtension(fileName);
@@ -22,44 +25,27 @@ exports.genThumbnail = (req, res) => {
   removeTempFiles();
 
   if (result.type === "image") {
-
     fileU.mv(urlDest, function (err, result) {
-
       createThumbnailForImage(res,fileName)
-
     }); //store file locally with mv function
-
   } else if (result.type === "video") {
-   
     try{
-
       fileU.mv(urlDest, function (err, result) {
-
-       createThumbnailForVideo(res).then(()=>{
-         
+       createThumbnailForVideo(res).then(()=>{   
           //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
           let base64Data= base64_encode(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
           //console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
           res.status(202).json({ b64Data: base64Data, extension: "png" });
         })
-
       }); //store file locally with mv function
-
- 
     }
     catch(err){
         console.log(err);
     }      
-
   }
 };
 
-/* async function asyncThumbsVideo(res){
 
-  await createThumbnailForVideo()
-
-  
-}  */
 
 function createThumbnailForVideo(){
 
