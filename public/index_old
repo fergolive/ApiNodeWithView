@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Esta es mi web </title>
+        <link rel="stylesheet" href="./style.css">
+       
+    </head>
+    <body>
+        
+        <h1>Hola querido mundo</h1>
+        <div class="element">
+            <button onclick="myFunction()" class="myButton" id="myIdButton">Click me asshole!</button>
+        </div>
+
+        <h1>Upload files</h1>
+        <div>
+            <iframe id="my_iframe" style="display:none;"></iframe>
+            <input type="file" name="inpfile" id="inpfile">
+            <button onclick="uploadFile()" name="submit">Upload File</button>
+            
+            
+        </div>
+
+        <script src="./main.js" charset="utf-8"></script>
+        
+    </body>
+</html>
