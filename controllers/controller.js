@@ -4,7 +4,7 @@
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
-
+let item=require("./item.js")
 
 
 let fileName = "";
