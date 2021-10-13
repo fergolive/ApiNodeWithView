@@ -10,14 +10,14 @@ const fileItem=require("./item")
 let fileName = "";
 let onlyName='';
 let urlDest; 
-
+let item;
 
 exports.genThumbnail = (req, res) => {
 
   try{
     
     let file = req.files.files; 
-    let item= new fileItem(file)
+    item= new fileItem(file)
 
     let fn=item.getFullName()
     if(fn) item.setFullName(fn)
@@ -32,8 +32,12 @@ exports.genThumbnail = (req, res) => {
     let newDir = createDir()
     if (fs.existsSync(newDir)) {
       let newDirFile=`${newDir}/${item.getFullName()}`
+      
+      item.setDirFullPath(newDirFile)
       file.mv(newDirFile,  (err, result)=> {
-        item.base64_encode()
+        
+        createThumbnail(newDirFile)
+
        }); 
     }
     
@@ -43,6 +47,35 @@ exports.genThumbnail = (req, res) => {
   }
   
 
+
+  function createThumbnail(pathFile){
+    
+    switch (item.type) {
+      case 'image':
+          newImageThumbnail();
+        break;
+    
+      case 'video':
+          newVideoThumbnail(pathFile);
+        break;
+    }
+  }
+
+  function newVideoThumbnail(){
+      generateVideoThumbnail().then(()=>{
+        let b64=item.base64_encode(`${item.getDirPath()}/thumb_${item.getName()}.png`)
+        item.setBase64(b64)
+      }).finally(()=>{
+        console.log('base64 file saved');
+        
+        item.removeTempPath()
+      })
+
+  }
+
+  function newImageThumbnail(){
+    
+  }
   
   
   //urlDest = `${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
@@ -59,7 +92,7 @@ exports.genThumbnail = (req, res) => {
       fileU.mv(urlDest, function (err, result) {
        createThumbnailForVideo(res).then(()=>{   
           //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
-          let base64Data= base64_encode(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
+          
           //console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
           res.status(202).json({ b64Data: base64Data, extension: "png" });
         })
@@ -74,33 +107,27 @@ exports.genThumbnail = (req, res) => {
 function createDir(){
   let newNameDir=new Date().getTime();
   var dir = __dirname + `/${newNameDir}`;
+  item.setDirPath(dir)
   if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, 0744);
   }
   return dir;
 }
 
-function createThumbnailForVideo(){
-
-  
+function generateVideoThumbnail(){
   return new Promise((resolve,reject)=>{
-
         const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
         const ffmpeg = require('fluent-ffmpeg');
         ffmpeg.setFfmpegPath(ffmpegInstaller.path);
         // console.log(ffmpegInstaller.path, ffmpegInstaller.version);
-        var path = require('path'); // Default node module
-        var pathToFile = path.join(__dirname, 'tempfiles', fileName);
-        var pathToSnapshot = path.join(__dirname, 'tempfiles');
-
+        var pathToFile=item.getDirFullPath()
+        var pathToSnapshot = item.getDirPath()
         var proc = ffmpeg(pathToFile)
-        // setup event handlers
         .on('filenames', (filenames)=> {
           console.log('screenshots are ' + filenames.join(', '));
         })
         .on('end', (data)=> {
           console.log('screenshots were saved');
-          
         })
         .on('error', (err)=> {
           console.log('an error happened: ' + err.message);
@@ -108,20 +135,16 @@ function createThumbnailForVideo(){
         })
         // take 2 screenshots at predefined timemarks and size
         //.takeScreenshots({ count: 2, timemarks: [ '00:00:02.000', '6' ], size: '150x100' },pathToSnapshot);
-        .takeScreenshots({ count: 1,filename:`thumb_${onlyName}.png`, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot)
+        .takeScreenshots({ count: 1,filename:`thumb_${item.getName()}.png`, timemarks: [ '00:00:01.000' ], size: '250x?' },pathToSnapshot)
           .on('end', () => {
-            console.log('FFmpeg done!')
+            console.log('thumb video done!')
             resolve()
           })
           .on('error', (err)=> {
             console.log('an error happened: ' + err.message);
             return reject(new Error(err))
-          })
-          
-    })
-
-        
-        
+          })   
+    })      
 }
 
 
@@ -181,19 +204,7 @@ function storeThumbLocally() {
   }
 }
 
-function removeTempFiles() {
 
-  const directory = `${__dirname}/tempfiles/`;
-
-  fs.readdir(directory, (err, files) => {
-    files.forEach((element) => {
-      fs.unlink(path.join(directory, element), (err) => {
-        if (err) throw err;
-      });
-    });
-  });
-
-}
 
 
 
