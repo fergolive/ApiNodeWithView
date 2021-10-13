@@ -110,10 +110,15 @@ class Item{
       }
 
       removeTempPath() {
-
-        fs.rm(this.getDirPath())
+        let dir=this.dirPath
+        fs.rmdir(dir, { recursive: true }, (err) => {
+          if (err) {
+              throw err;
+          }
+        
       
-      }
+      })
+    }
 
       
 

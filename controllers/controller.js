@@ -46,15 +46,12 @@ exports.genThumbnail = (req, res) => {
     console.log(err);
   }
   
-
-
+  
   function createThumbnail(pathFile){
-    
     switch (item.type) {
       case 'image':
           newImageThumbnail();
         break;
-    
       case 'video':
           newVideoThumbnail(pathFile);
         break;
@@ -67,41 +64,17 @@ exports.genThumbnail = (req, res) => {
         item.setBase64(b64)
       }).finally(()=>{
         console.log('base64 file saved');
-        
         item.removeTempPath()
+        console.log(item);
       })
 
   }
 
   function newImageThumbnail(){
-    
+    generateImageThumbnail()
   }
   
   
-  //urlDest = `${__dirname}/tempfiles/${fileU.name}`; //temporal files folder
-  //urlDestPy = `${__dirname}/python_tools/video.mp4`
-
-  /* removeTempFiles();
-
-  if (result.type === "image") {
-    fileU.mv(urlDest, function (err, result) {
-      createThumbnailForImage(res,fileName)
-    }); //store file locally with mv function
-  } else if (result.type === "video") {
-    try{
-      fileU.mv(urlDest, function (err, result) {
-       createThumbnailForVideo(res).then(()=>{   
-          //console.log(`${__dirname}/tempfiles/thumb_${onlyName}.png`);
-          
-          //console.log(`base64 image generated ${base64Data.substr(0,10)}...`);
-          res.status(202).json({ b64Data: base64Data, extension: "png" });
-        })
-      }); //store file locally with mv function
-    }
-    catch(err){
-        console.log(err);
-    }      
-  } */
 };
 
 function createDir(){
@@ -153,8 +126,9 @@ function generateVideoThumbnail(){
 
 
 
-function createThumbnailForImage(res,nameFile) {
-  let newUrlDest = `${__dirname}/tempfiles/${nameFile}`;
+function generateImageThumbnail() {
+ 
+  let newUrlDest = item.getDirFullPath();
   try {
     sharp(newUrlDest)
       .resize(250)
@@ -162,21 +136,15 @@ function createThumbnailForImage(res,nameFile) {
       .toBuffer()
       .then((data) => {
         const base64Data = data.toString("base64");
-
-        res.status(202).json({ b64Data: base64Data, extension: "png" });
+        item.setBase64(base64Data)
+        console.log('base64 file saved');
+        item.removeTempPath()
+        
       });
   } catch (error) {
     console.log(error);
   }
 }
-
-function getFfmpegInstance() {
-  return new this.FfmpegCommand({
-    source: urlDest,
-    logger: null,
-  });
-}
-
 
 
 
@@ -186,23 +154,7 @@ function sendThumbnail(base64Data, res) {
 
 
 
-function storeThumbLocally() {
-  try {
-    //generate thumbnails
-    //types: png, webp, jpeg, tiff, heif, raw
-    sharp(urlDest)
-      .resize(250)
-      .png()
-      .toFile(`${__dirname}/tempfiles/thumbnail.png`)
-      .then((data) => {
-       // console.log("thumb stored");
-        //res.send(data);
-        //res.send({success: true, message: "File uploaded!"});
-      });
-  } catch (error) {
-    console.log(error);
-  }
-}
+
 
 
 
