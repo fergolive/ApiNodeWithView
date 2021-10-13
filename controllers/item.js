@@ -1,3 +1,8 @@
+const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
+const fileItem=require("./item")
+
 class Item{
     constructor(file){
         this.fullname=null;
@@ -14,6 +19,22 @@ class Item{
         return this.file.name;
     }
 
+    setName(name){
+      this.name=name
+    }
+
+    setType(type){
+      this.type=type
+    }
+
+    setExtension(ext){
+      this.extension=ext
+    }
+
+    setBase64(b64){
+      this.base64=b64
+    }
+
     getExtension(fullname) {
         let result_extension = {};
         const images = ["jpg", "gif", "png"];
@@ -27,6 +48,7 @@ class Item{
         } else if (videos.includes(extension)) {
           result_extension = { type: "video", extension: extension };
         }
+        
         return result_extension;
       }
 
@@ -35,6 +57,7 @@ class Item{
         var bitmap = fs.readFileSync(file);
         // convert binary data to base64 encoded string
         let b64str=new Buffer.from(bitmap).toString('base64');
+       
         return b64str;
       }
 
@@ -42,17 +65,11 @@ class Item{
         
         let indexPoint = fullname.lastIndexOf(".");
         let name = fullname.substr(0,indexPoint);
+        
         return name;
       }
 
-      async setDataItem(fullname){
-        this.name = await this.getNameWithOutExtension(fullname)
-        
-        this.extension = await this.getExtension(fullname)
-        
-        this.base64= await this.base64_encode(this.file)
-        
-      }
+      
 
       
 

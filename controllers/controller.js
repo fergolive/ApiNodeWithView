@@ -15,13 +15,21 @@ let urlDest;
 exports.genThumbnail = (req, res) => {
 
   try{
-    console.log('aqui');
+    
     let file = req.files.files; 
     let item= new fileItem(file)
+
     let fn=item.getFullName()
-    item.setDataItem(fn)
+    let woext=item.getNameWithOutExtension(fn)
+    if(woext) item.setName(woext)
+    let ext=item.getExtension(fn)
+    if(ext){
+      item.setExtension(ext.extension)
+      item.setType(ext.setType)
+    } 
+    let b64=item.base64_encode(file)
+    if(b64) item.setBase64(b64)
     console.log(item);
-    
   }
   catch(err){
     console.log(err);
