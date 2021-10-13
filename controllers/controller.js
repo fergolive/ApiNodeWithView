@@ -20,16 +20,20 @@ exports.genThumbnail = (req, res) => {
     let item= new fileItem(file)
 
     let fn=item.getFullName()
+    if(fn) item.setFullName(fn)
     let woext=item.getNameWithOutExtension(fn)
     if(woext) item.setName(woext)
     let ext=item.getExtension(fn)
     if(ext){
       item.setExtension(ext.extension)
-      item.setType(ext.setType)
+      item.setType(ext.type)
     } 
-    let b64=item.base64_encode(file)
-    if(b64) item.setBase64(b64)
-    console.log(item);
+
+    let newDir = createDir()
+    if (fs.existsSync(newDir)) {
+      file.mv(newDir)
+  }
+    
   }
   catch(err){
     console.log(err);
@@ -64,7 +68,14 @@ exports.genThumbnail = (req, res) => {
   } */
 };
 
-
+function createDir(){
+  let newNameDir=new Date().getTime();
+  var dir = __dirname + `/${newNameDir}`;
+  if (!path.existsSync(dir)) {
+      fs.mkdirSync(dir, 0744);
+  }
+  return newNameDir;
+}
 
 function createThumbnailForVideo(){
 

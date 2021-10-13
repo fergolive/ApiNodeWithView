@@ -23,6 +23,10 @@ class Item{
       this.name=name
     }
 
+    setFullName(name){
+      this.fullname=name
+    }
+
     setType(type){
       this.type=type
     }
