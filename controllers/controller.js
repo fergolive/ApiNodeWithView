@@ -31,8 +31,11 @@ exports.genThumbnail = (req, res) => {
 
     let newDir = createDir()
     if (fs.existsSync(newDir)) {
-      file.mv(newDir)
-  }
+      let newDirFile=`${newDir}/${item.getFullName()}`
+      file.mv(newDirFile,  (err, result)=> {
+        item.base64_encode()
+       }); 
+    }
     
   }
   catch(err){
@@ -71,10 +74,10 @@ exports.genThumbnail = (req, res) => {
 function createDir(){
   let newNameDir=new Date().getTime();
   var dir = __dirname + `/${newNameDir}`;
-  if (!path.existsSync(dir)) {
+  if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, 0744);
   }
-  return newNameDir;
+  return dir;
 }
 
 function createThumbnailForVideo(){
