@@ -17,7 +17,7 @@ class Item {
     this.fullname = name;
   }
   getFullName() {
-    return this.file.name;
+    return this.fullname
   }
 
   //Name

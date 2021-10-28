@@ -4,13 +4,15 @@ const fileItem = require("./item");
 let item;
 let res=null;
 
+
+
 exports.genThumbnail = (req, res) => {
 
   try {
     res=res
     let file = req.files.files;
     item = new fileItem(file);
-    let fn = item.getFullName();
+    let fn = file.name;
     if (fn) item.setFullName(fn);
     let woext = item.getNameWithoutExtension(fn);
     if (woext) item.setName(woext);
@@ -23,12 +25,16 @@ exports.genThumbnail = (req, res) => {
     if (fs.existsSync(newDir)) {
       let newDirFile = `${newDir}/${item.getFullName()}`;
       item.setDirFullPath(newDirFile);
-      file.mv(newDirFile, (err, result) => {
+
+       file.mv(newDirFile, (err, result) => {
+
         createThumbnail(newDirFile);
-      });
+
+      }); 
     }
   } catch (err) {
-    console.log(err);
+    console.log('Erro 1');
+    sendError(err)
   }
 
 
@@ -36,17 +42,21 @@ exports.genThumbnail = (req, res) => {
 function createThumbnail() {
   switch (item.type) {
     case "image":
+      console.log('image');
       newImageThumbnail();
       break;
     case "video":
+      console.log('video');
       newVideoThumbnail();
       break;
   }
 }
 
 function newVideoThumbnail() {
+  console.log('new video section');
   generateVideoThumbnail()
     .then(() => {
+      
       let b64 = item.base64_encode(
         `${item.getDirPath()}/thumb_${item.getName()}.png`
       );
@@ -122,6 +132,10 @@ function generateVideoThumbnail() {
 
 function sendThumbnailToFront() {
   res.status(202).json({ state:'ok',item:item });
+}
+
+function sendError(error){
+  res.status().json({error:error})
 }
 
 };
